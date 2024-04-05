@@ -1,0 +1,160 @@
+<div class="container" *ngIf="users">
+  <div class="header">
+    <ng-container>
+    <button (click)="showForm()" class="create btn">Create User</button>
+    </ng-container>
+
+    <table>
+      <thead>
+      <tr>
+        <th>User Name</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Type</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let user of users" (click)="onHandleUser(user)">
+        <td>{{ user.username }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.types }}</td>
+      </tr>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+
+  </div>
+
+            <!--  Form for create user or update        -->
+    <form [formGroup]="userForm" *ngIf="isShowForm">
+      <div class="upperBlock">
+        <p *ngIf="createMode">Crate New User</p>
+        <p *ngIf="!createMode">{{clickedUser.first_name}} {{clickedUser.last_name}}</p>
+        <button (click)="isShowForm=false" class="closeModal"></button>
+      </div>
+
+      <div class="form-control">
+        <label for="username">Username: </label>
+        <input id="username" type="text" formControlName="username"
+        >
+        <div
+          *ngIf="controls['username'].invalid && (controls['username'].touched || controls['username'].dirty)"
+        >
+        <span class="warning"
+              *ngIf="controls['username'].hasError('required') || controls['username'].hasError('whitespace')"
+        >Field is required</span>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label for="first-name">First Name: </label>
+        <input id="first-name" type="text" formControlName="first_name" required>
+        <div
+          *ngIf="controls['first_name'].invalid && (controls['first_name'].touched || controls['first_name'].dirty)"
+        >
+            <span class="warning"
+                  *ngIf="controls['first_name'].hasError('required') || controls['first_name'].hasError('whitespace')"
+            >Field is required</span
+            >
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label for="last-name">Last Name: </label>
+        <input id="last-name" type="text" formControlName="last_name">
+        <div
+          *ngIf="controls['last_name'].invalid && (controls['last_name'].touched || controls['last_name'].dirty)"
+        >
+            <span class="warning"
+                  *ngIf="controls['last_name'].hasError('required') || controls['last_name'].hasError('whitespace')"
+            >Field is required</span
+            >
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label for="email">Email: </label>
+        <input id="email" type="email" formControlName="email" required>
+        <div
+          *ngIf="controls['email'].invalid && (controls['email'].touched || controls['email'].dirty)"
+        >
+            <span class="warning"
+                  *ngIf="controls['email'].hasError('required')"
+            >Field is required</span>
+          <span class="warning"
+                *ngIf="controls['email'].hasError('email')"
+          >Wrong email</span>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label for="types">Type: </label>
+        <select id="types" formControlName="types">
+          <option value="">Select one type</option>
+          <option *ngFor="let type of types" [value]="type">
+            {{type}}
+          </option>
+        </select>
+        <div
+          *ngIf="controls['types'].invalid && (controls['types'].touched || controls['types'].dirty)"
+        >
+            <span class="warning"
+                  *ngIf="controls['types'].hasError('required')"
+            >Field is required</span>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label for="password">Password: </label>
+        <input id="password" type="password" formControlName="password">
+        <div
+          *ngIf="controls['password'].invalid && (controls['password'].touched || controls['password'].dirty)"
+        >
+            <span class="warning"
+                  *ngIf="controls['password'].hasError('required')"
+            >Field is required</span>
+
+          <span class="warning"
+                *ngIf="controls['password'].hasError('pattern')"
+          >Password must contain min length 8. at least one number and one letter</span>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label for="type">Repeat Password: </label>
+        <input id="type" type="password" formControlName="repeatPassword">
+        <div
+          *ngIf="controls['repeatPassword'].invalid && (controls['repeatPassword'].touched || controls['repeatPassword'].dirty)"
+        >
+            <span class="warning"
+                  *ngIf="controls['repeatPassword'].hasError('required')"
+            >Field is required</span>
+
+          <span class="warning"
+                *ngIf="controls['repeatPassword'].hasError('pattern')"
+          >Password must contain min length 8. at least one number and one letter</span>
+        </div>
+        <span class="warning" *ngIf="!isEquals"
+        >Password must be equals</span>
+      </div>
+
+      <ng-container>
+        <button *ngIf="createMode; else editMode"
+                [disabled]="(userForm.invalid) || (!isEquals)"
+                (click)="onCreate()"
+                class="create btn"
+        >Create
+        </button>
+      </ng-container>
+      <ng-template #editMode>
+        <div class="edit">
+          <button  (click)="onDelete()" class="delete btn">Delete</button>
+          <button [disabled]="(userForm.invalid) || (!isEquals)" (click)="onUpdate()" class="create btn">Save</button>
+        </div>
+      </ng-template>
+    </form>
+</div>

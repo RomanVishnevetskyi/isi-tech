@@ -1,0 +1,17 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  img {
+    width: 600px;
+  }
+  .btn {
+    border-radius: 6px;
+    padding: 16px 40px;
+    border: none;
+    box-sizing: border-box;
+    color: white;
+    align-self: center;
+    background-color: #2E8FF0;
+  }
+}
