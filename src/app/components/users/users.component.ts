@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../models/user';
 import { emptyValidator } from '../../validators/no-empty';
 import { Subject, takeUntil } from 'rxjs';
+import { uniqueUsernameValidator } from '../../validators/uniq';
 
 @Component({
   selector: 'app-users',
@@ -16,10 +17,11 @@ export class UsersComponent implements OnInit, OnDestroy {
               private router: Router,
               private fb: FormBuilder) {
     this.userForm = this.fb.group({})
+    this.users = [];
   }
 
   types: Array<string> = ['Admin', 'Driver'];
-  users!:Array<User>
+  users:Array<User>
   userForm: FormGroup;
   isShowForm: boolean = false;
   clickedUser!:User;
@@ -32,6 +34,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       (users) => {
         if (users) {
           this.users = users;
+          this.initForm();
         }
       },
       (error) => {
@@ -43,12 +46,11 @@ export class UsersComponent implements OnInit, OnDestroy {
         }
       }
     )
-    this.initForm();
   }
 
   initForm() {
     this.userForm = this.fb.group({
-      username: ['',[Validators.required,emptyValidator()]],
+      username: ['',[Validators.required, emptyValidator(),uniqueUsernameValidator(this.users)]],
       first_name: ['',[Validators.required,emptyValidator()]],
       last_name: ['',[Validators.required,emptyValidator()]],
       email: ['',[Validators.required,Validators.email]],
@@ -60,6 +62,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.userForm.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(data=> {
       this.isEquals = (data.password === data.repeatPassword);
     })
+    this.userForm.updateValueAndValidity();
   }
 
   get controls() {
@@ -90,7 +93,17 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
-    this.users = [...this.users.filter((user:User) => user.id !== this.clickedUser.id)];
+    const userForDelete = {
+      username:this.userForm.value.username?.trim(),
+      first_name:this.userForm.value.first_name?.trim(),
+      last_name:this.userForm.value.last_name?.trim(),
+      email:this.userForm.value.email,
+      types:this.userForm.value.types,
+      password:this.userForm.value.password,
+      repeatPassword:this.userForm.value.repeatPassword,
+      id: this.userForm.value.id,
+    }
+    this.users = [...this.users.filter((user:User) => user.id !== userForDelete.id)];
     this.userForm.reset();
   }
 

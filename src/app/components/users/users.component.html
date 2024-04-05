@@ -47,6 +47,9 @@
         <span class="warning"
               *ngIf="controls['username'].hasError('required') || controls['username'].hasError('whitespace')"
         >Field is required</span>
+          <span class="warning"
+                *ngIf=" controls['username'].hasError('usernameNotUniq')"
+          >This username already exist</span>
         </div>
       </div>
 
